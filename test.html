@@ -31,19 +31,22 @@ bg-[url('background.jpg')] bg-center bg-cover p-6">
     <button id="calcBtn" class="w-full bg-blue-600 text-white p-2 rounded">Calculate</button>
 
     </div>
-    <div id="results" class="mt-6 hidden">
-      <h2 class="text-xl font-medium mb-2">Results</h2>
+    <div
+  id="results"
+  class="mt-6 hidden bg-white bg-opacity-90 p-4 rounded-lg shadow-lg">
+  <h2 class="text-xl font-medium mb-2">Results</h2>
       <p><strong>Description:</strong> <span id="desc"></span></p>
       <p><strong>CLP:</strong> <span id="clp"></span></p>
       <p><strong>Cycle Limit:</strong> <span id="limit"></span></p>
-      <table class="w-full mt-4 table-auto border-collapse">
-        <thead>
-          <tr class="bg-gray-200">
+      <table class="w-full mt-4 table-auto border-collapse bg-white">
+        <thead class="bg-gray-200">
+          <tr>
             <th class="border px-2 py-1">Percentage</th>
-            <th class="border px-2 py-1">Pro-Rata Value</th>
+            <th class="border px-2 py-1">Pro‑Rata Value</th>
           </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="tableBody">
+        </tbody>
       </table>
     </div>
   </div>
