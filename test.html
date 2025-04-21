@@ -3,23 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Joey Ippolito 2025 Pro-Rata Calculator</title>
-  <!-- Tailwind CSS CDN for basic styling -->
+  <title>Joey Ippolito 2025 Pro-Rata Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- SheetJS for Excel parsing -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
-<body class="
-bg-[url('background.jpg')] bg-center bg-cover p-6">
+<body class="bg-[url('background.jpg')] bg-center bg-cover p-6">
   <div class="max-w-xl mx-auto bg-gray-200 p-6 rounded-lg shadow">
     <h1 class="text-2xl font-semibold mb-4">Joey Ippolito 2025 Pro-Rata Calculator</h1>
-    <div class="mb-4">
-      <label class="block mb-1 font-medium">Upload Excel File:</label>
-      <input type="file" id="fileInput" accept=".xlsx, .xls" class="border p-2 rounded w-full" />
-      <label class="block mb-1 font-medium">Excel File Should Have The Following Format And Headers: </label>
-      <label class="block mb-1 font-small">Col A: Part No (input) Col B: Part Name (output) Col C: CLP (output)</label>
-        <label class="block mb-1 font-small">Col D: Cycle Limit Col E: Cost Per Cycle Col G: Cycles Remaining (input)</label>
-    </div>
     <div class="mb-4">
       <label class="block mb-1 font-medium">Part Number:</label>
       <input type="text" id="partNo" placeholder="Enter Part #" class="border p-2 rounded w-full" />
@@ -30,23 +20,19 @@ bg-[url('background.jpg')] bg-center bg-cover p-6">
     </div>
     <button id="calcBtn" class="w-full bg-blue-600 text-white p-2 rounded">Calculate</button>
 
-    </div>
-    <div
-  id="results"
-  class="mt-6 hidden bg-white bg-opacity-90 p-4 rounded-lg shadow-lg">
-  <h2 class="text-xl font-medium mb-2">Results</h2>
+    <div id="results" class="mt-6 hidden">
+      <h2 class="text-xl font-medium mb-2">Results</h2>
       <p><strong>Description:</strong> <span id="desc"></span></p>
       <p><strong>CLP:</strong> <span id="clp"></span></p>
       <p><strong>Cycle Limit:</strong> <span id="limit"></span></p>
-      <table class="w-full mt-4 table-auto border-collapse bg-white">
-        <thead class="bg-gray-200">
-          <tr>
+      <table class="w-full mt-4 table-auto border-collapse">
+        <thead>
+          <tr class="bg-gray-200">
             <th class="border px-2 py-1">Percentage</th>
-            <th class="border px-2 py-1">Pro‑Rata Value</th>
+            <th class="border px-2 py-1">Pro-Rata Value</th>
           </tr>
         </thead>
-        <tbody id="tableBody">
-        </tbody>
+        <tbody id="tableBody"></tbody>
       </table>
     </div>
   </div>
@@ -54,37 +40,31 @@ bg-[url('background.jpg')] bg-center bg-cover p-6">
   <script>
     let partsData = [];
 
-    document.getElementById('fileInput').addEventListener('change', handleFile);
-    document.getElementById('calcBtn').addEventListener('click', calculate);
+    // Change this URL to wherever the Excel file is hosted
+    const excelUrl = 'https://github.com/joeyipps04/Pro-Rata-Calc/blob/799fcd5c60d59a25b61775545a26d24a52b6a0a8/V2500%20LLP%20PRICING%20CALCULATOR.xlsx';
 
-    function handleFile(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const data = new Uint8Array(evt.target.result);
-        const wb = XLSX.read(data, { type: 'array' });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        partsData = XLSX.utils.sheet_to_json(ws);
-        alert('Loaded ' + partsData.length + ' parts from sheet');
-      };
-      reader.readAsArrayBuffer(file);
-    }
+    fetch(excelUrl)
+      .then(response => response.arrayBuffer())
+      .then(data => {
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        partsData = XLSX.utils.sheet_to_json(sheet);
+        console.log('Excel data loaded:', partsData);
+      })
+      .catch(err => alert('Error loading Excel file: ' + err));
 
-    function calculate() {
+    document.getElementById('calcBtn').addEventListener('click', () => {
       const partNo = document.getElementById('partNo').value.trim();
       const cycles = Number(document.getElementById('cycles').value);
       const part = partsData.find(r => String(r["Part No (input)"]).trim() === partNo);
-      if (!part) {
-        alert('Part not found');
-        return;
-      }
+      if (!part) return alert('Part not found');
+
       const desc = part["Part Name (output)"];
       const clpVal = Number(part["CLP (output)"]);
       const limitVal = Number(part["Cycle Limit"] || 20000);
       const costPerCycle = clpVal / limitVal;
       const fullCost = costPerCycle * cycles;
 
-      
       const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
       document.getElementById('desc').textContent = desc;
       document.getElementById('clp').textContent = fmt.format(clpVal);
@@ -102,7 +82,7 @@ bg-[url('background.jpg')] bg-center bg-cover p-6">
         tbody.appendChild(tr);
       }
       document.getElementById('results').classList.remove('hidden');
-    }
+    });
   </script>
 </body>
 </html>
